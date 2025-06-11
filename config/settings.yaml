@@ -1,0 +1,74 @@
+# Configuration Speech-to-Text (STT)
+stt:
+  model_size: "large-v3-turbo" # tiny, base, small, medium, large-v3-turbo
+  language: "fr" # Langue principale
+  device: "auto" # auto, cpu, cuda
+  use_faster_whisper: true # Utiliser faster-whisper pour de meilleures performances
+
+  # Paramètres audio
+  sample_rate: 16000
+  channels: 1
+  chunk_size: 1024
+  energy_threshold: 50 # Seuil de détection de la voix
+  silence_duration: 2.0 # Secondes de silence avant d'arrêter
+  min_recording_duration: 0.5 # Durée minimale d'enregistrement
+
+# Configuration du système RAG (Retrieval-Augmented Generation)
+rag:
+  embedding_model: "distiluse-base-multilingual-cased" # Modèle d'embeddings multilingue
+  chunk_size: 512 # Taille des chunks de texte
+  chunk_overlap: 50 # Chevauchement entre les chunks
+  top_k_results: 5 # Nombre de résultats à retourner
+  vector_store_path: "./data/vector_db" # Chemin de la base vectorielle
+  index_type: "IndexFlatIP" # Type d'index FAISS (IndexFlatIP, IndexHNSW)
+  similarity_threshold: 0.3 # Seuil de similarité cosinus (entre -1 et 1)
+
+# Configuration du modèle de langage (LLM)
+llm:
+  api_url: "http://localhost:1234/v1" # URL de l'API LM Studio
+  model_name: "llama-3.2-3b-instruct" # Nom du modèle à utiliser
+  temperature: 0.7 # Température pour la génération (0.0 - 1.0)
+  max_tokens: 1000 # Nombre maximum de tokens en sortie
+  max_history: 10 # Nombre maximum de messages dans l'historique
+  stream: true # Stream the response
+
+# Configuration Text-to-Speech (TTS)
+tts:
+  model_name: "tts_models/fr/css10/vits" # Modèle Coqui-TTS français
+  cache_dir: "data/audio_cache" # Répertoire de cache audio
+  use_gpu: false # Utiliser le GPU si disponible
+  audio_engine: "auto" # Moteur audio (pygame, sounddevice, auto)
+
+  # Paramètres de voix
+  speed: 1.0 # Vitesse de la parole (0.5 - 2.0)
+  pitch: 1.0 # Hauteur de la voix (0.5 - 2.0)
+  volume: 1.0 # Volume (0.0 - 1.0)
+
+# Configuration du logging
+logging:
+  level: "INFO" # Niveau de logging (DEBUG, INFO, WARNING, ERROR)
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Configuration générale de Thoth
+thoth:
+  use_rag_by_default: true # Utiliser RAG par défaut
+  max_context_length: 4000 # Longueur maximale du contexte
+  fallback_to_general_knowledge: true # Utiliser les connaissances générales si pas de contexte RAG
+  # Paramètres du mode continu
+  continuous_mode_settings:
+    auto_listen: true # Reprend automatiquement l'écoute après une réponse
+    interrupt_on_wake_word: true # Permet l'interruption par le mot de réveil
+    min_time_between_interrupts: 1.0 # Temps minimum entre deux interruptions (secondes)
+    clear_context_on_interrupt: false # Efface le contexte lors d'une interruption
+
+# Configuration du wake word
+wake_word:
+  enabled: true
+  access_key: "OxcS58wCcxuUv/nT33TO3mMEiADilPhW/HzlYzqacnOqJ8hF/DFZyA==" # Obtenir sur console.picovoice.ai
+  keyword: "jarvis" # Mot de réveil par défaut (gratuit)
+  sensitivity: 0.5 # Sensibilité (0-1)
+  audio_device_index: null # null pour le périphérique par défaut
+  # Paramètres d'interruption
+  allow_interruption: true # Permet d'interrompre avec le mot de réveil
+  interruption_timeout: 0.2 # Délai en secondes avant de considérer une interruption
+  background_detection: true # Continue la détection pendant le traitement

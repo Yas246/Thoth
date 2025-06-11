@@ -1,0 +1,31 @@
+6# Core dependencies
+PyYAML>=6.0.1
+numpy>=1.24.3
+torch>=2.0.1
+tqdm>=4.65.0
+
+# Speech-to-Text (STT)
+faster-whisper>=0.10.0
+whisper>=1.1.10
+pyaudio>=0.2.13
+sounddevice>=0.4.6
+soundfile>=0.12.1
+
+# Text-to-Speech (TTS)
+gTTS>=2.3.2
+pygame>=2.5.0
+
+# RAG System
+faiss-cpu>=1.7.4
+sentence-transformers>=2.2.2
+langchain>=0.0.350
+unstructured>=0.10.30
+PyPDF2>=3.0.1
+python-docx>=1.0.1
+
+# Wake Word Detection
+pvporcupine>=2.2.1
+
+# Testing and Development
+pytest>=7.4.0
+pytest-cov>=4.1.0 

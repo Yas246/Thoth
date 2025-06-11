@@ -1,0 +1,87 @@
+# Configuration globale de Thoth Assistant
+# Renommez ce fichier en settings.yaml et ajustez les valeurs selon vos besoins
+
+# Configuration du logging
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/thoth.log"
+  max_size: 10485760  # 10 MB
+  backup_count: 5
+
+# Configuration Speech-to-Text (STT)
+stt:
+  model_size: "base"  # tiny, base, small, medium, large-v3-turbo
+  language: "fr"
+  device: "auto"  # auto, cpu, cuda
+  use_faster_whisper: true
+  # Paramètres audio
+  sample_rate: 16000
+  channels: 1
+  chunk_size: 1024
+  # Détection d'activité vocale
+  energy_threshold: 50
+  silence_duration: 2.0
+  min_recording_duration: 0.5
+
+# Configuration Text-to-Speech (TTS)
+tts:
+  cache_dir: "data/audio_cache"
+  audio_engine: "auto"  # auto, pygame, sounddevice
+  lang: "fr"
+  # Paramètres de cache
+  max_cache_size: 1073741824  # 1 GB
+  cache_duration: 604800  # 7 jours en secondes
+
+# Configuration RAG (Retrieval-Augmented Generation)
+rag:
+  documents_path: "data/documents"
+  vector_store_path: "data/vector_db"
+  embedding_model: "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+  similarity_threshold: 0.3
+  max_chunks: 5
+  chunk_size: 1000
+  chunk_overlap: 200
+  # Paramètres de recherche
+  retrieval_k: 3
+  rerank_k: 2
+
+# Configuration LLM (Large Language Model)
+llm:
+  api_url: "http://localhost:1234"  # URL de l'API du modèle
+  model_name: "mixtral-8x7b"  # Nom du modèle à utiliser
+  temperature: 0.7
+  max_tokens: 2000
+  top_p: 0.95
+  presence_penalty: 0.0
+  frequency_penalty: 0.0
+  timeout: 30  # secondes
+
+# Configuration Wake Word
+wake_word:
+  enabled: false  # Activez si vous avez une clé d'accès Picovoice
+  access_key: "VOTRE_CLE_PICOVOICE"  # Clé d'accès Picovoice (requise)
+  keyword: "jarvis"  # Mot de réveil par défaut
+  sensitivity: 0.5
+  audio_device_index: null  # null pour le périphérique par défaut
+  # Paramètres d'interruption
+  allow_interruption: true  # Permet d'interrompre avec le mot de réveil
+  interruption_timeout: 0.5  # Délai en secondes avant de considérer une interruption
+  background_detection: true  # Continue la détection pendant le traitement
+
+# Configuration spécifique à Thoth
+thoth:
+  use_rag_by_default: true  # Utiliser RAG par défaut pour enrichir les réponses
+  max_context_length: 4000  # Longueur maximale du contexte en tokens
+  max_history_length: 10  # Nombre maximal de messages dans l'historique
+  response_language: "fr"  # Langue par défaut des réponses
+  # Modes d'interaction
+  default_input_mode: "text"  # text, speech
+  continuous_mode: false  # Mode continu avec détection du mot de réveil
+  # Paramètres du mode continu
+  continuous_mode_settings:
+    auto_listen: true  # Reprend automatiquement l'écoute après une réponse
+    interrupt_on_wake_word: true  # Permet l'interruption par le mot de réveil
+    min_time_between_interrupts: 1.0  # Temps minimum entre deux interruptions (secondes)
+    clear_context_on_interrupt: false  # Efface le contexte lors d'une interruption
+  
