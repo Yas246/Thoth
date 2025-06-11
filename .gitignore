@@ -8,3 +8,4 @@ modules/tts/data/audio_cache/783648590fb486656dd168a4c84ff8d5.wav
 modules/tts/data/audio_cache/e3c909a6e31f17a6f418a010a4b461b3.wav
 modules/tts/test_output.wav
 modules/wake_word/__pycache__/wake_word_module.cpython-312.pyc
+config/settings.yaml
