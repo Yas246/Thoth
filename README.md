@@ -25,15 +25,15 @@ Thoth est un assistant vocal intelligent en français qui combine plusieurs tech
 ## Installation
 
 1. Cloner le repository :
-   \`\`\`bash
-   git clone [URL_DU_REPO]
+   ```bash
+   git clone https://github.com/Yas246/Thoth
    cd Thoth
-   \`\`\`
+   ```
 
 2. Installer les dépendances :
-   \`\`\`bash
+   ```bash
    pip install -r requirements.txt
-   \`\`\`
+   ```
 
 3. Configuration :
 
@@ -44,7 +44,7 @@ Thoth est un assistant vocal intelligent en français qui combine plusieurs tech
 
 ### Structure du fichier settings.yaml
 
-\`\`\`yaml
+```yaml
 
 # Logging
 
@@ -83,21 +83,21 @@ auto_listen: true
 interrupt_on_wake_word: true
 min_time_between_interrupts: 1.0
 clear_context_on_interrupt: false
-\`\`\`
+```
 
 ## Utilisation
 
 ### Mode Standard
 
-\`\`\`bash
+```bash
 python main.py
-\`\`\`
+```
 
 ### Mode Continu avec Détection du Mot de Réveil
 
-\`\`\`bash
+```bash
 python main.py --continuous
-\`\`\`
+```
 
 ### Options Supplémentaires
 
