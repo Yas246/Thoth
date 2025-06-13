@@ -120,7 +120,7 @@ class TTSModule:
 
     def speak(self, text: str, lang: str = None, blocking: bool = True) -> bool:
         """
-        Ajoute le texte à la file de synthèse
+        Ajoute le texte à la file de synthèse avec découpage en phrases
         
         Args:
             text: Texte à prononcer
@@ -131,14 +131,25 @@ class TTSModule:
             bool: True si l'ajout à la file a réussi
         """
         try:
-            # Ajouter le texte à la file de synthèse
-            self.text_queue.put((text, lang))
+            # Découper le texte en phrases (sur les points et virgules)
+            sentences = [s.strip() for s in text.replace('.', '.|').replace('?', '?|').replace('!', '!|').replace(',', ',|').split('|') if s.strip()]
+            
+            # Ajouter chaque phrase à la file
+            for sentence in sentences:
+                if sentence:
+                    self.text_queue.put((sentence, lang))
+                    
+                    # Pour la première phrase, attendre qu'elle commence à être jouée
+                    if sentence == sentences[0]:
+                        while not self.is_speaking.is_set() and not self.force_stop.is_set():
+                            time.sleep(0.01)
             
             if blocking:
-                # Attendre que ce texte soit traité
+                # Attendre que toutes les phrases soient traitées
                 self.text_queue.join()
                 self.audio_queue.join()
             return True
+            
         except Exception as e:
             self.logger.error(f"Erreur lors de l'ajout à la file: {e}")
             return False
