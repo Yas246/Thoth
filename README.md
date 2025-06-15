@@ -7,7 +7,7 @@ Thoth est un assistant vocal intelligent en français qui combine plusieurs tech
 ### 1. Interaction Vocale Naturelle
 
 - **Reconnaissance Vocale (STT)** : Utilise Whisper pour une reconnaissance vocale précise en français
-- **Synthèse Vocale (TTS)** : Synthèse vocale de qualité avec gTTS
+- **Synthèse Vocale (TTS)** : Synthèse vocale de avec gTTS
 - **Détection du Mot de Réveil** : Activation par le mot "jarvis" (personnalisable)
 
 ### 2. Système d'Interruption Intelligent
@@ -25,12 +25,14 @@ Thoth est un assistant vocal intelligent en français qui combine plusieurs tech
 ## Installation
 
 1. Cloner le repository :
+
    ```bash
    git clone https://github.com/Yas246/Thoth
    cd Thoth
    ```
 
 2. Installer les dépendances :
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -45,7 +47,6 @@ Thoth est un assistant vocal intelligent en français qui combine plusieurs tech
 ### Structure du fichier settings.yaml
 
 ```yaml
-
 # Logging
 
 logging:

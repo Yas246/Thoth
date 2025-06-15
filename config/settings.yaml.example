@@ -11,10 +11,11 @@ logging:
 
 # Configuration Speech-to-Text (STT)
 stt:
-  model_size: "base"  # tiny, base, small, medium, large-v3-turbo
+  model_size: "base"  # tiny, base, small, medium, large
   language: "fr"
-  device: "auto"  # auto, cpu, cuda
-  use_faster_whisper: true
+  device: "cpu"  # cpu uniquement pour whisper.cpp
+  use_whisper_cpp: true  # Utiliser whisper.cpp au lieu de faster-whisper
+  n_threads: 4  # Nombre de threads pour whisper.cpp
   # Paramètres audio
   sample_rate: 16000
   channels: 1
@@ -48,14 +49,28 @@ rag:
 
 # Configuration LLM (Large Language Model)
 llm:
-  api_url: "http://localhost:1234"  # URL de l'API du modèle
-  model_name: "mixtral-8x7b"  # Nom du modèle à utiliser
+  model:
+    path: "/path/to/your/model.gguf"  # Chemin vers votre modèle GGUF
+    n_ctx: 2048  # Taille du contexte en tokens
+    n_threads: 4  # Nombre de threads CPU (4 recommandé pour RPi 5)
+    # Configuration GPU
+    n_gpu_layers: 0  # Nombre de couches à décharger sur le GPU (0 = CPU uniquement)
+    use_cuda: false  # Utiliser CUDA si disponible
+    use_vulkan: false  # Utiliser Vulkan si disponible
+    vulkan_device: 0  # Index du device Vulkan à utiliser
+    # Configuration mémoire
+    main_gpu: 0  # GPU principal pour les calculs
+    tensor_split: null  # Répartition des tenseurs entre GPUs (ex: [0.5, 0.5])
+    use_mmap: true  # Utiliser le memory mapping
+    use_mlock: false  # Verrouiller la mémoire
+  # Paramètres de génération
   temperature: 0.7
   max_tokens: 2000
   top_p: 0.95
   presence_penalty: 0.0
   frequency_penalty: 0.0
-  timeout: 30  # secondes
+  # Prompt système par défaut
+  system_prompt: "Vous êtes Thoth, un assistant IA français spécialisé dans l'aide et l'information. Vous répondez de manière claire, précise et utile en français."
 
 # Configuration Wake Word
 wake_word:

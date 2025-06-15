@@ -1,12 +1,12 @@
-6# Core dependencies
+# Core dependencies
 PyYAML>=6.0.1
 numpy>=1.24.3
 torch>=2.0.1
 tqdm>=4.65.0
+llama-cpp-python>=0.2.23
 
 # Speech-to-Text (STT)
-faster-whisper>=0.10.0
-whisper>=1.1.10
+whisper-ctranslate2>=0.4.0
 pyaudio>=0.2.13
 sounddevice>=0.4.6
 soundfile>=0.12.1

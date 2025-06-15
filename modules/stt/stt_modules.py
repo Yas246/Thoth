@@ -12,10 +12,10 @@ from pathlib import Path
 
 import pyaudio
 import numpy as np
-import whisper
-from faster_whisper import WhisperModel
 import torch
 import yaml # For loading config in __main__
+
+from .whisper_wrapper import WhisperCpp
 
 # Configuration du logging
 # logging.basicConfig(level=logging.INFO) # Removed global basicConfig
@@ -26,8 +26,8 @@ class STTConfig:
     """Configuration pour le module STT"""
     model_size: str = "base"  # tiny, base, small, medium, large
     language: str = "fr"
-    device: str = "auto"  # auto, cpu, cuda
-    use_faster_whisper: bool = True
+    device: str = "cpu"  # cpu uniquement pour whisper.cpp
+    n_threads: int = 4  # Nombre de threads pour whisper.cpp
     
     # Audio settings
     sample_rate: int = 16000
@@ -190,34 +190,40 @@ class WhisperSTT:
     def _load_model(self):
         """Charge le modèle Whisper"""
         try:
-            # Déterminer le device
-            if self.config.device == "auto":
-                device = "cuda" if torch.cuda.is_available() else "cpu"
-            else:
-                device = self.config.device
+            logger.info(f"Chargement du modèle Whisper {self.config.model_size}")
             
-            logger.info(f"Chargement du modèle Whisper {self.config.model_size} sur {device}")
+            # Obtenir le chemin du modèle
+            model_path = self._get_model_path()
             
-            if self.config.use_faster_whisper:
-                # Utiliser faster-whisper (plus rapide)
-                compute_type = "float16" if device == "cuda" else "int8"
-                self.model = WhisperModel(
-                    self.config.model_size,
-                    device=device,
-                    compute_type=compute_type
-                )
-                logger.info("Modèle faster-whisper chargé")
-            else:
-                # Utiliser whisper standard
-                self.model = whisper.load_model(
-                    self.config.model_size,
-                    device=device
-                )
-                logger.info("Modèle whisper standard chargé")
+            # Initialiser whisper.cpp
+            self.model = WhisperCpp(
+                model_path=model_path,
+                language=self.config.language,
+                n_threads=self.config.n_threads
+            )
+            logger.info("Modèle whisper.cpp chargé")
                 
         except Exception as e:
             logger.error(f"Erreur lors du chargement du modèle: {e}")
             raise
+
+    def _get_model_path(self) -> str:
+        """Retourne le chemin du modèle GGML"""
+        # Répertoire des modèles
+        models_dir = Path("models/whisper")
+        models_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Nom du fichier modèle
+        model_file = f"ggml-{self.config.model_size}.bin"
+        model_path = models_dir / model_file
+        
+        # Télécharger si nécessaire
+        if not model_path.exists():
+            logger.info(f"Téléchargement du modèle {model_file}...")
+            WhisperCpp.download_model(self.config.model_size, str(models_dir))
+            logger.info("Téléchargement terminé")
+        
+        return str(model_path)
     
     def transcribe_audio_data(self, audio_data: bytes) -> str:
         """Transcrit des données audio en texte"""
@@ -247,29 +253,8 @@ class WhisperSTT:
             
             logger.info(f"Transcription de {audio_path}")
             
-            if self.config.use_faster_whisper:
-                # faster-whisper
-                segments, info = self.model.transcribe(
-                    audio_path,
-                    language=self.config.language,
-                    beam_size=5
-                )
-                
-                # Combiner tous les segments
-                transcription = " ".join([segment.text for segment in segments])
-                
-                logger.info(f"Langue détectée: {info.language} (probabilité: {info.language_probability:.2f})")
-                
-            else:
-                # whisper standard
-                result = self.model.transcribe(
-                    audio_path,
-                    language=self.config.language
-                )
-                transcription = result["text"]
-            
-            # Nettoyer la transcription
-            transcription = transcription.strip()
+            # Transcription avec whisper.cpp
+            transcription = self.model.transcribe_file(audio_path)
             logger.info(f"Transcription: {transcription}")
             
             return transcription
@@ -436,7 +421,7 @@ if __name__ == "__main__":
     
     default_stt_test_config = {
         "model_size": "base", "language": "fr", "device": "cpu",
-        "use_faster_whisper": True, "sample_rate": 16000, "channels": 1,
+        "n_threads": 4, "sample_rate": 16000, "channels": 1,
         "chunk_size": 1024, "energy_threshold": 70, # Slightly higher threshold for tests
         "silence_duration": 2.0, "min_recording_duration": 0.5
     }
